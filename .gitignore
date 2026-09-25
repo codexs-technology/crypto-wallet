@@ -32,3 +32,6 @@ Thumbs.db
 
 # Other
 *.tgz
+
+# Cloudflare (keep wrangler.jsonc, ignore local state)
+.wrangler/

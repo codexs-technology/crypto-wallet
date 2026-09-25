@@ -1,0 +1,42 @@
+{
+    // Cloudflare Worker deployment for the Flash USDT wallet.
+    // Deploy with: npx wrangler deploy   (local test: npx wrangler dev)
+    "$schema": "./node_modules/wrangler/config-schema.json",
+    "name": "crypto-wallet",
+    "main": "worker/index.js",
+    "compatibility_date": "2026-09-25",
+    "observability": {
+        "enabled": true
+    },
+    "assets": {
+        // Repo root is the static site root (index.html / app.js / styles.css).
+        // .assetsignore keeps node_modules, contracts, the Express backend and
+        // every other repo file out of the upload, so the deploy stays far
+        // below the 25 MiB per-asset limit that broke the previous build.
+        "directory": "./",
+        "binding": "ASSETS",
+        "not_found_handling": "single-page-application",
+        // /api/* is handled by worker/index.js, every other request is served
+        // straight from static assets without invoking the Worker.
+        "run_worker_first": [
+            "/api/*"
+        ]
+    },
+    "vars": {
+        // Leave empty to use the API implemented in worker/index.js.
+        // Set it to an already hosted Express backend to proxy /api/* there.
+        "BACKEND_URL": "",
+        // Optional JSON-RPC overrides (defaults live in worker/index.js).
+        "POLYGON_RPC": "https://polygon-rpc.com",
+        "ETH_RPC": "https://1rpc.io/eth",
+        "BSC_RPC": "https://bsc-dataseed.binance.org",
+        "TRON_RPC": "https://api.trongrid.io"
+        // Optional deployed Flash USDT contract addresses (public information).
+        // Defaults to the zero address, which means "not deployed yet":
+        // "FLASH_USDT_POLYGON": "0x...",
+        // "FLASH_USDT_ETHEREUM": "0x...",
+        // "FLASH_USDT_BINANCE": "0x...",
+        // "FLASH_USDT_TRON": "T..."
+        // Keep secrets out of this file: npx wrangler secret put ONEINCH_API_KEY
+    }
+}

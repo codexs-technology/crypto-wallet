@@ -190,6 +190,61 @@ npx hardhat run scripts/deploy.js --network ethereum
 npx hardhat run scripts/deploy.js --network binance
 ```
 
+### Deploy to Cloudflare Workers (frontend + API)
+
+The wallet deploys as one Cloudflare Worker: static assets are served from the
+repository root and every `/api/*` request is handled by `worker/index.js`.
+
+```bash
+# Authenticate once
+npx wrangler login
+
+# Local preview of the assets + API (http://localhost:8787)
+npm run preview
+
+# Deploy
+npm run deploy:worker          # same as: npx wrangler deploy
+
+# Verify every /api/* route locally (no Cloudflare account needed)
+npm run test:api
+```
+
+Configuration lives in `wrangler.jsonc`:
+
+| Key | Purpose |
+|-----|---------|
+| `main` | `worker/index.js` – the Worker API |
+| `assets.directory` | `./` – the repo root holds `index.html`, `app.js`, `styles.css` |
+| `assets.not_found_handling` | `single-page-application` fallback |
+| `assets.run_worker_first` | `/api/*` only – all other paths are served as assets without invoking the Worker |
+| `vars.BACKEND_URL` | Set it to proxy `/api/*` to an already hosted Express backend |
+
+> Cloudflare project settings: keep the build command as `npm install` and the
+> deploy command as `npx wrangler deploy`. `wrangler.jsonc` and `.assetsignore`
+> are committed, so Wrangler no longer runs its interactive first-time setup
+> (which hard-coded `assets.directory: "."` and uploaded `node_modules`).
+
+`.assetsignore` allow-lists the browser files (`.gitignore` syntax), so
+`node_modules` (the 127 MiB `workerd` binary), contracts, the Express backend
+and `.env` files are never uploaded. Add any new static file to that file, or
+the deploy fails with `✘ [ERROR] Asset too large` / assets stay missing.
+
+Secrets and optional overrides:
+
+```bash
+npx wrangler secret put ONEINCH_API_KEY   # enables live 1inch swap quotes
+```
+
+`FLASH_USDT_POLYGON`, `FLASH_USDT_ETHEREUM`, `FLASH_USDT_BINANCE` and
+`FLASH_USDT_TRON` can be added as `vars` in `wrangler.jsonc` after the contract
+is deployed; until then flash balances report `0`, exactly like the Express
+backend does with its default configuration.
+
+On-chain writes (`flashMint` / `transfer`) need a signer, so they are reported
+as `simulated` on the Worker – the same status the Express backend returns when
+`PRIVATE_KEY` is missing. Point `BACKEND_URL` at the Express backend if you
+need transactions signed with `PRIVATE_KEY`.
+
 ## License
 
 MIT

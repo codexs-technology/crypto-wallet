@@ -12,6 +12,11 @@
     "dev:backend": "cd crypto-wallet-backend && node backend-server.js",
     "dev:frontend": "cd frontend && npx vite",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build": "hardhat compile",
+    "deploy:worker": "wrangler deploy",
+    "preview": "wrangler dev",
+    "preview:static": "npx serve .",
+    "test:api": "node scripts/test-worker-api.mjs",
     "lint": "eslint . --ext .js,.ts",
     "lint:contracts": "npx hardhat compile"
   },
@@ -22,6 +27,7 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "concurrently": "^8.2.0",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "wrangler": "^4.140.0"
   }
 }

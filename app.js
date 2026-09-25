@@ -8,6 +8,10 @@ class FlashWallet {
         this.wallet = null;
         this.accounts = [];
         this.currentNetwork = 'POL';
+        // Same-origin /api (Worker or Express backend). Override at runtime by
+        // defining window.ENV = { API_BASE_URL: 'https://api.example.com/api' }
+        // before this script loads.
+        this.apiBase = window.ENV?.API_BASE_URL || '/api';
         this.networks = {
             'POL': { name: 'Polygon', id: 'POL', chainId: 137, rpc: 'https://polygon-rpc.com', symbol: 'MATIC' },
             'TRC-20': { name: 'Tron', id: 'TRC-20', chainId: null, rpc: 'https://api.trongrid.org', symbol: 'TRX' },
@@ -15,7 +19,6 @@ class FlashWallet {
             'BEP-20': { name: 'Binance', id: 'BEP-20', chainId: 56, rpc: 'https://bsc-dataseed.binance.org', symbol: 'BNB' }
         };
         this.mintedToken = null;
-        this.apiBase = '/api';
         this.validityDays = 7;
         this.supportedPlatforms = ['Qurtex', 'Pocket Option', 'Exness', 'Stake', '7xBET', '1xBET'];
         this.supportedExchanges = ['Binance', 'Bitget', 'MEXC', 'Bybit'];

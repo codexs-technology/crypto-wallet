@@ -1,0 +1,22 @@
+# ---------------------------------------------------------------------------
+# Cloudflare Workers static assets ignore rules
+# ---------------------------------------------------------------------------
+# Wrangler reads this file from the root of `assets.directory` (the repo root,
+# see wrangler.jsonc) and skips every path that matches it, using .gitignore
+# syntax. Ignored paths are never uploaded, so they are never public.
+#
+# The pattern below is an allow-list: "*" excludes everything and the "!"
+# lines re-include only the three files that make up the static wallet.
+#
+# This is what fixes the build error:
+#   ✘ [ERROR] Asset too large. ... node_modules/workerd/bin/workerd (127 MiB)
+# Wrangler supports at most 25 MiB per asset / 100,000 assets, and it does NOT
+# skip node_modules by default - so the whole repo must be excluded here.
+# ---------------------------------------------------------------------------
+
+# Exclude everything ...
+*
+# ... except the browser files that are actually served.
+!/index.html
+!/app.js
+!/styles.css
