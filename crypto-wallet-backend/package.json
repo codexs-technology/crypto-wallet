@@ -1,0 +1,34 @@
+{
+  "name": "flash-crypto-wallet-backend",
+  "version": "1.0.0",
+  "description": "Flash USDT Wallet Backend - Multi-chain support with flash mint, swap, transfer, trade",
+  "main": "backend-server.js",
+  "scripts": {
+    "start": "node backend-server.js",
+    "dev": "nodemon backend-server.js",
+    "lint": "eslint backend-server.js abi.js config/addresses.js --fix",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "flash",
+    "crypto",
+    "wallet",
+    "usdt",
+    "polygon",
+    "ethereum",
+    "binance",
+    "tron"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.0",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

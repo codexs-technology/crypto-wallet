@@ -1,0 +1,27 @@
+{
+  "name": "flash-crypto-wallet",
+  "version": "1.0.0",
+  "description": "Flash USDT Crypto Wallet - Multi-chain flash token generation wallet",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "deploy": "hardhat run scripts/deploy.js --network localhost",
+    "dev:backend": "cd crypto-wallet-backend && node backend-server.js",
+    "dev:frontend": "cd frontend && npx vite",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "lint": "eslint . --ext .js,.ts",
+    "lint:contracts": "npx hardhat compile"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.6.1",
+    "hardhat": "^2.22.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "concurrently": "^8.2.0",
+    "dotenv": "^16.4.5"
+  }
+}
